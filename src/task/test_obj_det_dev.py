@@ -185,6 +185,38 @@ class PoseCalculator:
         marker_pub.publish(marker_array)
 
 
+    def publish_joint_positions(self, joint_positions):
+        marker_pub = rospy.Publisher("/joint_positions", MarkerArray, latch=True)
+
+        marker_array = MarkerArray()
+        
+        marker = Marker()
+        marker.header.frame_id = self.color_frame_id
+        marker.header.stamp = rospy.Time.now()
+        marker.ns = "joint_positions"
+        marker.id = 0
+        marker.type = Marker.SPHERE
+        marker.action = Marker.ADD
+        marker.pose.position.x = joint_positions.shoulder.x
+        marker.pose.position.y = joint_positions.shoulder.y
+        marker.pose.position.z = joint_positions.shoulder.z
+        marker.pose.orientation.x = 0
+        marker.pose.orientation.y = 0
+        marker.pose.orientation.z = 0
+        marker.pose.orientation.w = 1  
+        marker.scale.x = 0.05
+        marker.scale.y = 0.05
+        marker.scale.z = 0.05
+        marker.color.r = 1.0
+        marker.color.g = 0.0
+        marker.color.b = 0.0
+        marker.color.a = 1.0
+
+        marker_array.markers.append(marker)
+
+        marker_pub.publish(marker_array)
+
+
 # main of example script for iChores Pipeline
 # if you want to build your own rosnode, build it like this
 
@@ -274,7 +306,9 @@ if __name__ == "__main__":
                 t0 = time.time()
                 joint_positions = pose_calculator.detect_pointing_gesture(rgb, depth)
                 time_pointing = time.time() - t0
-                print('... received pointing gesture.')
+                if joint_positions is not None:
+                    print('... received pointing gesture.')
+                    pose_calculator.publish_joint_positions(joint_positions)
 
                 # New step: Check which object the human is pointing to
                 t0 = time.time()
