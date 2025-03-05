@@ -185,21 +185,17 @@ class PoseCalculator:
         marker_pub.publish(marker_array)
 
 
-    def publish_joint_positions(self, joint_positions):
-        marker_pub = rospy.Publisher("/joint_positions", MarkerArray, latch=True)
-
-        marker_array = MarkerArray()
-        
+    def make_body_marker(self, id, pos):
         marker = Marker()
         marker.header.frame_id = self.color_frame_id
         marker.header.stamp = rospy.Time.now()
-        marker.ns = "joint_positions"
-        marker.id = 0
+        marker.ns = "body_joints"
+        marker.id = id
         marker.type = Marker.SPHERE
         marker.action = Marker.ADD
-        marker.pose.position.x = joint_positions.shoulder.x
-        marker.pose.position.y = joint_positions.shoulder.y
-        marker.pose.position.z = joint_positions.shoulder.z
+        marker.pose.position.x = pos.x
+        marker.pose.position.y = pos.y
+        marker.pose.position.z = pos.z
         marker.pose.orientation.x = 0
         marker.pose.orientation.y = 0
         marker.pose.orientation.z = 0
@@ -212,7 +208,18 @@ class PoseCalculator:
         marker.color.b = 0.0
         marker.color.a = 1.0
 
-        marker_array.markers.append(marker)
+        return marker
+
+    def publish_joint_positions(self, joint_positions):
+        marker_pub = rospy.Publisher("/body_joints", MarkerArray, latch=True)
+
+        marker_array = MarkerArray()
+        
+        print(joint_positions)
+
+        marker_array.markers.append(self.make_body_marker(0, joint_positions.shoulder))
+        marker_array.markers.append(self.make_body_marker(1, joint_positions.elbow))
+        marker_array.markers.append(self.make_body_marker(2, joint_positions.wrist))
 
         marker_pub.publish(marker_array)
 
