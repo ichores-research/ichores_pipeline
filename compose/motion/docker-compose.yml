@@ -6,7 +6,7 @@ services:
       context: ../../src/motion/docker
       dockerfile: dockerfile
     network_mode: "host"
-    runtime: "nvidia"
+    gpus: all
     volumes:
       - "../../src/motion:/root/motion:rw"
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
@@ -17,7 +17,6 @@ services:
       - DISPLAY
       - QT_X11_NO_MITSHM=1
     command: bash -c "source /opt/pal/gallium/setup.bash; source catkin_ws/devel/setup.bash;
-             python -c 'import moveit_commander';
-             python ./motion/hello.py"        
+             python ./motion/pick.py"        
     stdin_open: true
     tty: true
