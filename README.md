@@ -83,7 +83,8 @@ for AGH:
 
 ```
 tiago #this is an alias
-ROS_MASTER_URI=$ROS_MASTER_URI ROS_IP=$ROS_IP DATASET=ycb_ichores CONFIG=params_tiago_cracow.yaml  docker-compose up
+set -a
+ROS_MASTER_URI=$ROS_MASTER_URI ROS_IP=$ROS_IP DATASET=ycb_ichores CONFIG=params_tiago_cracow.yaml docker-compose up -d
 ```
 
 Docker containers for yolov8, GDRN++ and MediaPipe will be started.

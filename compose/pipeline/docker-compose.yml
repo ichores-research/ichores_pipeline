@@ -104,7 +104,7 @@ services:
     stdin_open: true
     tty: true 
   goal_state_reasoning:
-    image: goal_state_reasoning
+    image: goal_state_reasoning:latest
     privileged: true
     build: 
       context: ../../src/goal_state_reasoning/docker
@@ -114,10 +114,10 @@ services:
     volumes:
       - /dev/bus/usb:/dev/bus/usb
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ../src:/root/goal_state_reasoning
-      - ../goal_state_reasoning_msgs /root/catkin_ws/src/goal_state_reasoning_msgs
-      - ../config:/root/config
-      - "../../../data/datasets:/root/goal_state_reasoning/datasets:rw"
+      - ../../src/goal_state_reasoning/src:/root/goal_state_reasoning
+      - ../../src/goal_state_reasoning/goal_state_reasoning_msgs:/root/catkin_ws/src/goal_state_reasoning_msgs
+      - ../../src/goal_state_reasoning/config:/root/config
+      - "../../data/datasets:/root/goal_state_reasoning/datasets:rw"
     environment:
       - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
       - ROS_IP=${ROS_IP:-127.0.0.1}
@@ -127,11 +127,9 @@ services:
       - CONFIG=${CONFIG}
     ports:
       - "11434:11434"
-    command: bash -c "ollama pull llama3:70b &&
-                      source catkin_ws/devel/setup.bash;
-                      rosparam load /root/config/${CONFIG} /pose_estimator;
-                      cd goal_state_reasoning;
-                      python main.py"
-
     stdin_open: true
     tty: true
+    depends_on:
+      - task
+      - yolo
+      - gdrnpp
