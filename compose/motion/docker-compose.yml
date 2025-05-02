@@ -16,7 +16,7 @@ services:
       - ROS_IP=${ROS_IP:-127.0.0.1}
       - DISPLAY
       - QT_X11_NO_MITSHM=1
-    command: bash -c "source /opt/pal/gallium/setup.bash; source catkin_ws/devel/setup.bash;
+    command: bash -c "source /opt/ros/noetic/setup.bash;
              python ./motion/pick.py"        
     stdin_open: true
     tty: true
