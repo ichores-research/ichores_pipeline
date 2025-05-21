@@ -4,7 +4,7 @@ services:
     image: motion
     build:
       context: ../../src/motion/docker
-      dockerfile: dockerfile
+      dockerfile: dockerfile_melodic
     network_mode: "host"
     gpus: all
     volumes:
