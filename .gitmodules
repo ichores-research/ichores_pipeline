@@ -13,3 +13,10 @@
 [submodule "src/motion"]
 	path = src/motion
 	url = git@github.com:ichores-research/motion.git
+[submodule "src/grounded_sam2_ros"]
+	path = src/grounded_sam2_ros
+	url = https://github.com/v4r-tuwien/grounded_sam2_ros.git
+[submodule "src/hsr_contact_graspnet"]
+	path = src/hsr_contact_graspnet
+	url = https://github.com/v4r-tuwien/hsr_contact_graspnet.git
+	branch = ichores_version

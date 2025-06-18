@@ -1,0 +1,4 @@
+gsam2:
+  box_threshold: 0.3
+  text_threshold: 0.25
+  area_threshold: 80
