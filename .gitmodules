@@ -7,9 +7,19 @@
 [submodule "src/pointing_gesture_recognition"]
 	path = src/pointing_gesture_recognition
 	url = https://github.com/v4r-tuwien/pointing_gesture_recognition.git
-[submodule "src/goal_state_reasoning"]
-	path = src/goal_state_reasoning
-	url = https://github.com/ichores-research/goal_state_reasoning
+[submodule "src/speech_recognition_ros"]
+	path = src/speech_recognition_ros
+	url = git@github.com:hirschmanner/speech_recognition_ros.git
 [submodule "src/motion"]
 	path = src/motion
 	url = git@github.com:ichores-research/motion.git
+[submodule "src/grounded_sam2_ros"]
+	path = src/grounded_sam2_ros
+	url = https://github.com/v4r-tuwien/grounded_sam2_ros.git
+[submodule "src/hsr_contact_graspnet"]
+	path = src/hsr_contact_graspnet
+	url = https://github.com/v4r-tuwien/hsr_contact_graspnet.git
+	branch = ichores_version
+[submodule "src/goal_state_reasoning"]
+	path = src/goal_state_reasoning
+	url = https://github.com/ichores-research/goal_state_reasoning.git

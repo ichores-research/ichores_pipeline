@@ -6,7 +6,7 @@ services:
       context: ../../src/motion/docker
       dockerfile: dockerfile
     network_mode: "host"
-    runtime: "nvidia"
+    gpus: all
     volumes:
       - "../../src/motion:/root/motion:rw"
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
@@ -16,7 +16,9 @@ services:
       - ROS_IP=${ROS_IP:-127.0.0.1}
       - DISPLAY
       - QT_X11_NO_MITSHM=1
-    command: bash -c "source /opt/pal/gallium/setup.bash; source catkin_ws/devel/setup.bash;
-             while true; do sleep 1000; done"        
+      - MOVE_GROUP=${MOVE_GROUP}
+    command: bash -c "source /opt/ros/noetic/setup.bash;
+             source /root/catkin_ws/devel/setup.bash;
+             python3 ./motion/motion_service.py --group-name ${MOVE_GROUP}"        
     stdin_open: true
     tty: true

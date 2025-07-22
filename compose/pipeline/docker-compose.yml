@@ -22,7 +22,7 @@ services:
       - DATASET=${DATASET}
     command: bash -c "source catkin_ws/devel/setup.bash;
                       rosparam load /root/config/${CONFIG} /pose_estimator;
-                      python /root/task/test_obj_det_dev.py"
+                      python /root/task/test_obj_det_dev_grasp_predictor.py"
     stdin_open: true
     tty: true
 
