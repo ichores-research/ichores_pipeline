@@ -26,97 +26,69 @@ services:
     stdin_open: true
     tty: true
 
-  grounded_sam2_ros:
-    image: grounded_sam2_ros
-    privileged: true
-    build:
-      context: ../../src/grounded_sam2_ros
-      dockerfile: Dockerfile_ros
-    network_mode: "host"
-    runtime: "nvidia"
-    volumes:
-      - /dev/bus/usb:/dev/bus/usb
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ../torch_cache/gsam2/:/root/.cache/torch
-      - "../../src/grounded_sam2_ros:/root/grounded_sam2_ros:rw"
-      - ../../config:/root/config
+  # yolo:
+  #   image: yolo
+  #   privileged: true
+  #   build:
+  #     context: ../../src/yolov8_ros/docker
+  #     dockerfile: dockerfile_ros
+  #   network_mode: "host"
+  #   runtime: "nvidia"
+  #   volumes:
+  #     - /dev/bus/usb:/dev/bus/usb
+  #     - /tmp/.X11-unix:/tmp/.X11-unix:rw
+  #     - "../../src/yolov8_ros:/root/yolo:rw"
+  #     - "../../data/weights/yolov8:/root/yolo/weights:rw"
+  #     - ../../config:/root/config
+  #   environment: 
+  #     - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+  #     - ROS_IP=${ROS_IP:-127.0.0.1}
+  #     - DISPLAY
+  #     - QT_X11_NO_MITSHM=1
+  #     - DATASET=${DATASET}
+  #   command: bash -c "source catkin_ws/devel/setup.bash;
+  #                     python ./yolo/detect_ros_seg_service.py --conf-thres 0.85 --weights ./yolo/weights/${DATASET}.pt --camera-topic '$$(rosparam get /pose_estimator/color_topic)'"
+  #   stdin_open: true
+  #   tty: true 
 
-    environment: 
-      - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
-      - ROS_IP=${ROS_IP:-127.0.0.1}
-      - DISPLAY
-      - QT_X11_NO_MITSHM=1
-      - NVIDIA_DRIVER_CAPABILITIES=all
-    command: bash -c "source /opt/ros/noetic/setup.bash;
-                      source /root/catkin_ws/devel/setup.bash;
-                      python3.10 -m pip install --no-build-isolation -e  /root/grounded_sam2_ros/grounding_dino;
-                      export CUDA_HOME=/usr/local/cuda-12.1/;
-                      rosparam load /root/config/gsam2.yaml;
-                      python3 /root/grounded_sam2_ros/grounded_sam_2_ros_service.py"
-    stdin_open: true
-    tty: true 
-  contact_graspnet:
-    image: contact_graspnet
-    privileged: true
-    build:
-      context: ../../src/hsr_contact_graspnet/docker
-      dockerfile: Dockerfile
-    network_mode: "host"
-    runtime: "nvidia"
-    volumes:
-      - /dev/bus/usb:/dev/bus/usb
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ../../src/hsr_contact_graspnet:/root/hsr_contact_graspnet
-      - ../../config:/root/config
-    environment:
-      - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
-      - ROS_IP=${ROS_IP:-127.0.0.1}
-      - DISPLAY
-      - QT_X11_NO_MITSHM=1
-      - NVIDIA_DRIVER_CAPABILITIES=all
-    command: bash -c "source /opt/ros/melodic/setup.bash;
-                      source /root/catkin_ws/devel/setup.bash; 
-                      python3 hsr_contact_graspnet/ROS/contact_graspnet_node/scripts/contact_graspnet_script_as.py"
-    stdin_open: true
-    tty: true 
-  yolo:
-    image: yolo
-    privileged: true
-    build:
-      context: ../../src/yolov8_ros/docker
-      dockerfile: dockerfile_ros
-    network_mode: "host"
-    runtime: "nvidia"
-    volumes:
-      - /dev/bus/usb:/dev/bus/usb
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - "../../src/yolov8_ros:/root/yolo:rw"
-      - "../../data/weights/yolov8:/root/yolo/weights:rw"
-      - ../../config:/root/config
-    environment: 
-      - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
-      - ROS_IP=${ROS_IP:-127.0.0.1}
-      - DISPLAY
-      - QT_X11_NO_MITSHM=1
-      - DATASET=${DATASET}
-    command: bash -c "source catkin_ws/devel/setup.bash;
-                      python ./yolo/detect_ros_seg_service.py --conf-thres 0.85 --weights ./yolo/weights/${DATASET}.pt --camera-topic '$$(rosparam get /pose_estimator/color_topic)'"
-    stdin_open: true
-    tty: true 
+  # gdrnpp:
+  #   image: gdrnpp
+  #   build:
+  #     context: ../../src/gdrnpp_bop2022/docker
+  #     dockerfile: dockerfile_ros
+  #   network_mode: "host"
+  #   runtime: "nvidia"
+  #   volumes:
+  #     - "../../src/gdrnpp_bop2022:/root/gdrnpp:rw"
+  #     - /tmp/.X11-unix:/tmp/.X11-unix:rw
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - "../../data/weights/gdrnpp:/root/gdrnpp/output:rw"
+  #     - "../../data/datasets:/root/gdrnpp/datasets/BOP_DATASETS:rw"
+  #     - ../../config:/root/config
+  #   environment: 
+  #     - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+  #     - ROS_IP=${ROS_IP:-127.0.0.1}
+  #     - DISPLAY
+  #     - QT_X11_NO_MITSHM=1
+  #     - DATASET=${DATASET}
+  #   command: bash -c "source catkin_ws/devel/setup.bash;
+  #            python ./gdrnpp/core/gdrn_modeling/demo/demo_gdrn_ros.py --dataset_name ${DATASET}"        
+  #   stdin_open: true
+  #   tty: true
 
-  gdrnpp:
-    image: gdrnpp
+  pointing_gesture_recognition:
+    image: pointing_gesture_recognition
+    privileged: true
     build:
-      context: ../../src/gdrnpp_bop2022/docker
-      dockerfile: dockerfile_ros
+      context: ../../src/pointing_gesture_recognition/docker
+      dockerfile: dockerfile
     network_mode: "host"
     runtime: "nvidia"
     volumes:
-      - "../../src/gdrnpp_bop2022:/root/gdrnpp:rw"
+      - /dev/bus/usb:/dev/bus/usb
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - /etc/localtime:/etc/localtime:ro
-      - "../../data/weights/gdrnpp:/root/gdrnpp/output:rw"
-      - "../../data/datasets:/root/gdrnpp/datasets/BOP_DATASETS:rw"
+      - "../../src/pointing_gesture_recognition:/root/pointing_gesture_recognition:rw"
+      - "../../data/datasets:/root/pointing_gesture_recognition/datasets:rw"
       - ../../config:/root/config
     environment: 
       - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
@@ -124,39 +96,45 @@ services:
       - DISPLAY
       - QT_X11_NO_MITSHM=1
       - DATASET=${DATASET}
-    command: bash -c "source catkin_ws/devel/setup.bash;
-             python ./gdrnpp/core/gdrn_modeling/demo/demo_gdrn_ros.py --dataset_name ${DATASET}"        
+    command: >
+      bash -c "source catkin_ws/devel/setup.bash; 
+      python ./pointing_gesture_recognition/pointing_detector.py 
+      --color-topic '$$(rosparam get /pose_estimator/color_topic)' 
+      --depth-topic '$$(rosparam get /pose_estimator/depth_topic)'"
     stdin_open: true
-    tty: true
+    tty: true 
 
-  goal_state_reasoning:
-    image: goal_state_reasoning:${MODEL_HOSTING:-ollama}
-    privileged: true
-    build: 
-      context: ../../src/goal_state_reasoning/docker
-      dockerfile: dockerfile_ros_${MODEL_HOSTING:-ollama}
-    network_mode: "host"
-    runtime: "nvidia"
-    volumes:
-      - /dev/bus/usb:/dev/bus/usb
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ../../src/goal_state_reasoning/src:/root/goal_state_reasoning
-      - ../../src/goal_state_reasoning/goal_state_reasoning_msgs:/root/catkin_ws/src/goal_state_reasoning_msgs
-      - ../../src/goal_state_reasoning/config:/root/config
-      - "../../data/datasets:/root/goal_state_reasoning/datasets:rw"
-    environment:
-      - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
-      - ROS_IP=${ROS_IP:-127.0.0.1}
-      - DISPLAY
-      - QT_X11_NO_MITSHM=1
-      - DATASET=${DATASET}
-      - CONFIG=${CONFIG}
-      - TEST_RUN=${TEST_RUN:-FALSE}
-    ports:
-      - "11434:11434"
-    stdin_open: true
-    tty: true
-    depends_on:
-      - task
-      - yolo
-      - gdrnpp
+  # whisper-ros:
+  #   build:
+  #     context: ../../src/speech_recognition_ros
+  #     dockerfile: docker/Dockerfile
+  #     target: whisper-ros
+  #   network_mode: "host"
+  #   runtime: "nvidia"
+  #   volumes:
+  #     - ../../src/speech_recognition_ros:/catkin_ws/src/whisper_ros
+  #     - /tmp/.X11-unix:/tmp/.X11-unix:rw
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - $HOME/vscode-server:$HOME/.vscode-server
+  #     - /dev/snd:/dev/snd
+  #     - ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native
+  #     - ~/.config/pulse/cookie:/root/.config/pulse/cookie
+  #   environment:
+  #     - DISPLAY
+  #     - TERM
+  #     - QT_X11_NO_MITSHM=1
+  #     - NVIDIA_DRIVER_CAPABILITIES=all
+  #     - NVIDIA_VISIBLE_DEVICES=all
+  #     - PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native
+  #     - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+  #     - ROS_IP=${ROS_IP:-127.0.0.1}
+  #   devices:
+  #     - "/dev/snd"
+  #     - /dev:/dev
+  #   cap_add:
+  #     - SYS_RAWIO
+  #   security_opt:
+  #     - seccomp:unconfined
+  #   privileged: true
+  #   stdin_open: true
+  #   tty: true
