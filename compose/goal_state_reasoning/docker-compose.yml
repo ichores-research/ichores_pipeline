@@ -1,31 +1,5 @@
 version: '2.4'
 services:
-  task:
-    image: task
-    privileged: true
-    build: 
-      context: ../../
-      dockerfile: src/task/dockerfile
-    network_mode: "host"
-    runtime: "nvidia"
-    volumes:
-      - /dev/bus/usb:/dev/bus/usb
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ../../src/task:/root/task
-      - ../../config:/root/config
-      - "../../data/datasets:/root/task/datasets:rw"
-    environment:
-      - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
-      - ROS_IP=${ROS_IP:-127.0.0.1}
-      - DISPLAY
-      - QT_X11_NO_MITSHM=1
-      - DATASET=${DATASET}
-    command: bash -c "source catkin_ws/devel/setup.bash;
-                      rosparam load /root/config/${CONFIG} /pose_estimator;
-                      python /root/task/test_obj_det_dev_grasp_predictor.py"
-    stdin_open: true
-    tty: true
-
   yolo:
     image: yolo
     privileged: true
@@ -75,7 +49,54 @@ services:
              python ./gdrnpp/core/gdrn_modeling/demo/demo_gdrn_ros.py --dataset_name ${DATASET}"        
     stdin_open: true
     tty: true
-
+  task:
+    image: task
+    privileged: true
+    build: 
+      context: ../../
+      dockerfile: src/task/dockerfile
+    network_mode: "host"
+    runtime: "nvidia"
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ../../src/task:/root/task
+      - ../../config:/root/config
+      - "../../data/datasets:/root/task/datasets:rw"
+    environment:
+      - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+      - ROS_IP=${ROS_IP:-127.0.0.1}
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+      - DATASET=${DATASET}
+    command: bash -c "source catkin_ws/devel/setup.bash;
+                      rosparam load /root/config/${CONFIG} /pose_estimator;
+                      python /root/task/test_obj_det_dev.py"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - yolo
+      - gdrnpp
+  motion:
+    image: motion
+    privileged: true
+    build: 
+      context: ../../src/motion
+      dockerfile: Dockerfile
+    network_mode: "host"
+    runtime: "nvidia"
+    volumes:
+      - "../../src/motion:/root/motion:rw"
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /etc/localtime:/etc/localtime:ro
+    environment: 
+      - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+      - ROS_IP=${ROS_IP:-127.0.0.1}
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+    stdin_open: true
+    tty: true
+    command: [ "bash", "-c", "source /opt/ros/noetic/setup.bash && source /root/catkin_ws/devel/setup.bash && python3 /root/motion_service.py" ]
   goal_state_reasoning:
     image: goal_state_reasoning:${MODEL_HOST:-ollama}
     privileged: true
