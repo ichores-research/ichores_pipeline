@@ -77,6 +77,22 @@ services:
     depends_on:
       - yolo
       - gdrnpp
+  table_plane_extractor:
+    image: table_plane_extractor
+    privileged: true
+    build: 
+      context: ../../src/table_plane_extractor/
+      dockerfile: Dockerfile
+    network_mode: "host"
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ../../config:/root/config
+    environment:
+      - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+      - ROS_IP=${ROS_IP:-127.0.0.1}
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
   motion:
     image: motion
     privileged: true
@@ -96,7 +112,12 @@ services:
       - QT_X11_NO_MITSHM=1
     stdin_open: true
     tty: true
-    command: [ "bash", "-c", "source /opt/ros/noetic/setup.bash && source /root/catkin_ws/devel/setup.bash && python3 /root/motion_service.py" ]
+    command: [ "bash", "-c", "source /opt/ros/noetic/setup.bash && source /root/catkin_ws/devel/setup.bash && python3 /root/motion/motion_service.py" ]
+    depends_on:
+      - table_plane_extractor
+
+  
+  
   goal_state_reasoning:
     image: goal_state_reasoning:${MODEL_HOST:-ollama}
     privileged: true

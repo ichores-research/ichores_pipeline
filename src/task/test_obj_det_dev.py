@@ -77,47 +77,12 @@ class PoseCalculator:
 
         return grasps
     
-    # def publish_annotated_image(self, rgb, detections):
-    #     try:
-    #         cv_image = self.bridge.imgmsg_to_cv2(rgb, "bgr8")
-    #     except CvBridgeError as e:
-    #         rospy.logerr(e)
-    #         return
-
-    #     for detection in detections:
-    #         xmin = int(detection.bbox.ymin)
-    #         ymin = int(detection.bbox.xmin)
-    #         xmax = int(detection.bbox.ymax)
-    #         ymax = int(detection.bbox.xmax)
-
-    #         font_size = 1.0
-    #         line_size = 3
-
-    #         cv2.rectangle(cv_image, (xmin, ymin), (xmax, ymax), (0, 255, 0), line_size)
-
-    #         class_name = detection.name
-    #         score = detection.score
-    #         label = f"{class_name}: {score:.2f}"
-    #         cv2.putText(cv_image, label, (xmin, ymin - 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 255, 0), line_size)
-
-    #     # Publish annotated image
-    #     annotated_image_msg = self.bridge.cv2_to_imgmsg(cv_image, "bgr8")
-    #     self.image_publisher.publish(annotated_image_msg)
-
-    #     # Display image for debugging
-    #     # cv2.imshow("Annotated Image", cv_image)
-    #     # cv2.waitKey(10)
-
     def publish_annotated_image(self, rgb, detections):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(rgb, "bgr8")
         except CvBridgeError as e:
             rospy.logerr(e)
             return
-
-        height, width, _ = cv_image.shape
-
-        overlay = cv_image.copy()
 
         for detection in detections:
             xmin = int(detection.bbox.ymin)
@@ -126,39 +91,22 @@ class PoseCalculator:
             ymax = int(detection.bbox.xmax)
 
             font_size = 1.0
-            line_size = 2
+            line_size = 3
 
-            # Draw bounding box
             cv2.rectangle(cv_image, (xmin, ymin), (xmax, ymax), (0, 255, 0), line_size)
 
             class_name = detection.name
             score = detection.score
             label = f"{class_name}: {score:.2f}"
-            cv2.putText(cv_image, label, (xmin, ymin - 10), cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 255, 0), line_size)
-
-            # Reconstruct mask from flat index list
-            mask_indices = np.array(detection.mask, dtype=np.int32)
-            mask = np.zeros((height * width), dtype=np.uint8)
-            mask[mask_indices] = 1
-            mask = mask.reshape((height, width))
-
-            # Generate a consistent color
-            color = tuple((hash(class_name) % 256, (hash(class_name + 'a') % 256), (hash(class_name + 'b') % 256)))
-            color = np.array(color, dtype=np.uint8)
-
-            # Blend color into the overlay where mask is active
-            alpha = 0.5
-            mask_3c = np.stack([mask] * 3, axis=-1)  # Shape (H, W, 3)
-
-            # Only update where mask is 1
-            overlay = np.where(mask_3c, (alpha * color + (1 - alpha) * overlay).astype(np.uint8), overlay)
-
-        # Blend overlay onto original image
-        cv2.addWeighted(overlay, 0.5, cv_image, 0.5, 0, cv_image)
+            cv2.putText(cv_image, label, (xmin, ymin - 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 255, 0), line_size)
 
         # Publish annotated image
         annotated_image_msg = self.bridge.cv2_to_imgmsg(cv_image, "bgr8")
         self.image_publisher.publish(annotated_image_msg)
+
+        # Display image for debugging
+        # cv2.imshow("Annotated Image", cv_image)
+        # cv2.waitKey(10)
 
     def publish_mesh_marker(self, cls_name, quat, t_est):
         vis_pub = rospy.Publisher("/gdrnet_meshes_estimated", Marker, latch=True)
@@ -283,7 +231,6 @@ if __name__ == "__main__":
                 try:
                     for detection in detections:
                         if not detection.name == "036_wood_block":
-                            detection.name = "006_mustard_bottle"
                             estimated_pose = pose_calculator.estimate_object_poses(rgb, depth, detection)[0]
                             estimated_poses_camFrame.append(estimated_pose)
                             object_names.append(detection.name)
@@ -331,24 +278,21 @@ if __name__ == "__main__":
 
                 # New step: Check which object the human is pointing to
                 t0 = time.time()
-                #if len(estimated_poses_camFrame) > 0 and joint_positions is not None:
-                if len(estimated_poses_camFrame) > 0 and joint_positions is not None:
+                if estimated_poses_camFrame and joint_positions is not None:
                     elbow = joint_positions.elbow
                     wrist = joint_positions.wrist
                     min_distance = float('inf')
                     pointed_object = None
                     threshold = 0.3  # 0.5 meters              
-                    
-                    print(estimated_poses_camFrame)
 
                     pointed_object_pose = None
-                    for idx, estimated_pose in enumerate(estimated_poses_camFrame):
-                        object_position = estimated_pose.pose.position
+                    for idx, pose_result in enumerate(estimated_poses_camFrame.pose_results):
+                        object_position = pose_result.position
                         distance = calculate_distance_to_line(object_position, elbow, wrist)
                         if distance < min_distance:
                             min_distance = distance
-                            pointed_object = estimated_pose.name
-                            pointed_object_pose = estimated_pose.pose
+                            pointed_object = estimated_poses_camFrame.class_names[idx]
+                            pointed_object_pose = pose_result
 
                     if min_distance < threshold:
                         R = np.array([pointed_object_pose.orientation.x, pointed_object_pose.orientation.y,  pointed_object_pose.orientation.z, pointed_object_pose.orientation.w])
@@ -368,4 +312,3 @@ if __name__ == "__main__":
 
     except rospy.ROSInterruptException:
         pass
-
