@@ -94,7 +94,7 @@ while getopts "u:i:d:r:e:m:h" opt; do
           ;;
         "goal_state_reasoner")
           # Updated path to reflect subdirectory
-          COMPOSE_FILES+=" -f compose/goal_state_reasoner/docker-compose.yml"
+          COMPOSE_FILES+=" -f compose/goal_state_reasoning/docker-compose.yml"
           echo "  Reasoner: Goal State Reasoner selected"
           ;;
         *)
