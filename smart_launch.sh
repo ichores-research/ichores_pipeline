@@ -157,9 +157,11 @@ if [ "$MOTION_SELECTED" = false ]; then
   echo "Error: A motion module (-m) is required." >&2
   usage
 fi
-if [z "$DATASET"]
+
+# Set default dataset if not provided
+if [ -z "$DATASET" ]; then
   DATASET="ycb_ichores"
-Ffi
+fi
 
 # Export environment variables if they were set.
 # These will be available to Docker Compose and subsequently to the containers.
