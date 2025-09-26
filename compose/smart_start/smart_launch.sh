@@ -2,7 +2,7 @@
 
 # --- Configuration ---
 # Base Docker Compose file (always included)
-COMPOSE_FILES="-f compose/pipeline/docker-compose.yml"
+COMPOSE_FILES="-f ../pipeline/docker-compose.yml"
 
 # Initialize environment variables.
 # If not provided via CLI, these will remain empty, meaning they won't be
@@ -60,17 +60,17 @@ while getopts "u:i:d:r:e:m:h" opt; do
         "hsr")
           # Updated path to reflect subdirectory
           echo "  Robot: HSR selected"
-          CONFIG="./config/params_hsr.yaml"
+          CONFIG="../../config/params_hsr.yaml"
           ;;
         "tiago-prague")
           # Updated path to reflect subdirectory
           echo "  Robot: TIAGo (Prague) selected"
-          CONFIG="./config/params_tiago_prague.yaml"
+          CONFIG="../../config/params_tiago_prague.yaml"
           ;;
         "tiago-krakow")
           # Updated path to reflect subdirectory
           echo "  Robot: TIAGo (Krakow) selected"
-          CONFIG="./config/params_tiago_cracow.yaml"
+          CONFIG="../../config/params_tiago_cracow.yaml"
           ;;
         *)
           echo "Error: Invalid robot type '$ROBOT_TYPE'. Must be hsr, tiago-prague, or tiago-krakow." >&2
@@ -89,12 +89,12 @@ while getopts "u:i:d:r:e:m:h" opt; do
           ;;
         "reasoner") # Generic reasoner, renamed to avoid option name conflict
           # Updated path to reflect subdirectory
-          COMPOSE_FILES+=" -f compose/reasoner_pipeline/docker-compose.yml"
+          COMPOSE_FILES+=" -f ../reasoner_pipeline/docker-compose.yml"
           echo "  Reasoner: Reasoner_pipeline selected"
           ;;
         "goal_state_reasoner")
           # Updated path to reflect subdirectory
-          COMPOSE_FILES+=" -f compose/goal_state_reasoning/docker-compose.yml"
+          COMPOSE_FILES+=" -f ../goal_state_reasoning/docker-compose.yml"
           echo "  Reasoner: Goal State Reasoner selected"
           ;;
         *)
@@ -109,7 +109,7 @@ while getopts "u:i:d:r:e:m:h" opt; do
       case "$MOTION_MODULE_TYPE" in
         "motion")
           # Updated path to reflect subdirectory
-          COMPOSE_FILES+=" -f compose/motion/docker-compose.yml"
+          COMPOSE_FILES+=" -f ../motion/docker-compose.yml"
           echo "  Motion Module: Motion selected"
           ;;
         "motion-stack")

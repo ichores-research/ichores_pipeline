@@ -22,33 +22,33 @@
 	branch = ichores_version
 [submodule "src/uncom"]
 	path = src/uncom
-	url = https://github.com/ichores-research/uncom
+	url = https://github.com/ichores-research/uncom.git
 	branch = main
 [submodule "src/goal_state_reasoning"]
 	path = src/goal_state_reasoning
-	url = https://github.com/ichores-research/goal_state_reasoning
+	url = https://github.com/ichores-research/goal_state_reasoning.git
 	branch = main
 [submodule "src/reasoner_docker_pipeline"]
 	path = src/reasoner_docker_pipeline
-	url = https://github.com/nadgrinch/reasoner_docker_pipeline
+	url = https://github.com/nadgrinch/reasoner_docker_pipeline.git
 	branch = main
 [submodule "src/Motion_stack"]
 	path = src/Motion_stack
-	url = https://github.com/ichores-research/Motion_stack
+	url = git@github.com:ichores-research/Motion_stack.git
 	branch = docker
 [submodule "src/tiago-motion"]
 	path = src/tiago-motion
-	url = https://github.com/ichores-research/tiago-motion
+	url = git@github.com:ichores-research/tiago-motion.git
 	branch = main
 [submodule "src/Human_detection"]
 	path = src/Human_detection
-	url = https://github.com/ichores-research/Human_detection
+	url = git@github.com:ichores-research/Human_detection.git
 	branch = main
 [submodule "src/modality_merging"]
 	path = src/modality_merging
-	url = https://github.com/ichores-research/modality_merging
+	url = https://github.com/ichores-research/modality_merging.git
 	branch = master
 [submodule "src/traditional_nlp_module"]
 	path = src/traditional_nlp_module
-	url = https://github.com/ichores-research/traditional_nlp_module
+	url = https://github.com/ichores-research/traditional_nlp_module.git
 	branch = main

@@ -1,3 +1,4 @@
+
 services:
   melodic:
     image: tiago_melodic
@@ -5,12 +6,12 @@ services:
     network_mode: "host"
     container_name: tiago_melodic
     build:
-      context: ./src/melodic/
+      context: ../../src/reasoner_docker_pipeline/src/melodic/
       dockerfile: Dockerfile
     volumes:
       - /entrypoint.sh:/src/melodic/entrypoint.sh
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ./melodic_ws:/tiago_public_ws/src/user_packages
+      - ../../src/reasoner_docker_pipeline/melodic_ws:/tiago_public_ws/src/user_packages
     working_dir: /tiago_public_ws
     environment:
       - ROS_MASTER_URI=${ROS_MASTER_URI:-http://tiago-114c:11311}
@@ -27,11 +28,11 @@ services:
     network_mode: "host"
     container_name: tiago_noetic
     build:
-      context: ./src/noetic/
+      context: ../../src/reasoner_docker_pipeline/src/noetic/
       dockerfile: Dockerfile
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ./noetic_ws:/tiago_dual_public_ws/src/user_packages
+      - ../../src/reasoner_docker_pipeline/noetic_ws:/tiago_dual_public_ws/src/user_packages
     environment:
       - ROS_MASTER_URI=${ROBOT_ROS_MASTER_URI:-http://tiago-114c:11311}
       - ROS_IP=${ROS_IP:-127.0.0.1}
@@ -47,10 +48,10 @@ services:
     network_mode: "host"
     container_name: tiago_ros2
     build:
-      context: ./src/ros2/
+      context: ../../src/reasoner_docker_pipeline/src/ros2/
       dockerfile: Dockerfile
     volumes:
-     - ./ros2_ws:/ros2_ws/src/user_packages
+     - ../../src/reasoner_docker_pipeline/ros2_ws:/ros2_ws/src/user_packages
     environment:
       - ROS_DOMAIN_ID=0  # ROS2 domain configuration
     command: bash
