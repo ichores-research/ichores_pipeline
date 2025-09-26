@@ -28,10 +28,6 @@
 	path = src/goal_state_reasoning
 	url = https://github.com/ichores-research/goal_state_reasoning.git
 	branch = main
-[submodule "src/reasoner_docker_pipeline"]
-	path = src/reasoner_docker_pipeline
-	url = https://github.com/nadgrinch/reasoner_docker_pipeline.git
-	branch = main
 [submodule "src/Motion_stack"]
 	path = src/Motion_stack
 	url = git@github.com:ichores-research/Motion_stack.git
@@ -52,3 +48,6 @@
 	path = src/traditional_nlp_module
 	url = https://github.com/ichores-research/traditional_nlp_module.git
 	branch = main
+[submodule "src/reasoner_pipeline"]
+	path = src/reasoner_pipeline
+	url = git@github.com:ichores-research/reasoner_pipeline.git
