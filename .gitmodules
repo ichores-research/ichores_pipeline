@@ -10,6 +10,9 @@
 [submodule "src/speech_recognition_ros"]
 	path = src/speech_recognition_ros
 	url = git@github.com:hirschmanner/speech_recognition_ros.git
+[submodule "src/motion"]
+	path = src/motion
+	url = https://github.com/ichores-research/motion.git
 [submodule "src/grounded_sam2_ros"]
 	path = src/grounded_sam2_ros
 	url = https://github.com/v4r-tuwien/grounded_sam2_ros.git
