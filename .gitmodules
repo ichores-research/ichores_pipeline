@@ -10,9 +10,6 @@
 [submodule "src/speech_recognition_ros"]
 	path = src/speech_recognition_ros
 	url = git@github.com:hirschmanner/speech_recognition_ros.git
-[submodule "src/motion"]
-	path = src/motion
-	url = git@github.com:ichores-research/motion.git
 [submodule "src/grounded_sam2_ros"]
 	path = src/grounded_sam2_ros
 	url = https://github.com/v4r-tuwien/grounded_sam2_ros.git
@@ -23,3 +20,6 @@
 [submodule "src/goal_state_reasoning"]
 	path = src/goal_state_reasoning
 	url = https://github.com/ichores-research/goal_state_reasoning.git
+[submodule "src/table_plane_extractor"]
+	path = src/table_plane_extractor
+	url = https://github.com/ichores-research/table_plane_extractor.git
