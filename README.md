@@ -78,15 +78,6 @@ or for YCB-iChores dataset objects:
 ```
 ROS_MASTER_URI=http://127.0.0.1:11311 ROS_IP=127.0.0.1  DATASET=ycb_ichores CONFIG=params_realsense.yaml docker-compose up
 ```
-
-for AGH:
-
-```
-tiago #this is an alias
-set -a
-ROS_MASTER_URI=$ROS_MASTER_URI ROS_IP=$ROS_IP DATASET=ycb_ichores CONFIG=params_tiago_cracow.yaml docker-compose up -d
-```
-
 Docker containers for yolov8, GDRN++ and MediaPipe will be started.
 
 ## Visualization
