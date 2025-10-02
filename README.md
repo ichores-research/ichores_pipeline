@@ -65,20 +65,15 @@ If the containers were already built before, you can still use the same commands
 full pipeline:
 ```
 ./download_data.sh
-cd compose/pipeline
+cd compose
 xhost +
 ```
-then for YCB-V dataset objects (ROS example for local setup, adapt ROS_MASTER_URI and ROS_IP depending on your setup):
+Configure your own docker combination by adding or removing profiles and setting environment variables; e.g.
+```
+DATASET=ycb_ichores ROS_MASTER_URI=http://localhost:11311 ROS_IP=127.0.0.1 MODEL_HOST=ollama CONFIG=../config/params_tiago_cracow.yaml TEST_RUN=FALSE MOVE_GROUP=torso DISPLAY=:0 docker compose -f supreme-docker-compose.yml   --profile gdrnpp   --profile goal_state_reasoning_ollama   --profile contact_graspnet   --profile grounded_sam2_ros   --profile motion   --profile task   --profile pointing_gesture_recognition --profile whisper_ros   --profile yolo   up --build
+```
+You can mix and match all combinations and flavors of ichores project components.
 
-```
-ROS_MASTER_URI=http://127.0.0.1:11311 ROS_IP=127.0.0.1  DATASET=ycbv CONFIG=params_realsense.yaml docker-compose up
-```
-or for YCB-iChores dataset objects:
-
-```
-ROS_MASTER_URI=http://127.0.0.1:11311 ROS_IP=127.0.0.1  DATASET=ycb_ichores CONFIG=params_realsense.yaml docker-compose up
-```
-Docker containers for yolov8, GDRN++ and MediaPipe will be started.
 
 ## Visualization
 To visualize the estimated bounding box and object pose use RViZ and load the RViZ config from ./configs
