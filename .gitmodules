@@ -51,3 +51,6 @@
 [submodule "src/reasoner_pipeline"]
 	path = src/reasoner_pipeline
 	url = git@github.com:ichores-research/reasoner_pipeline.git
+[submodule "src/table_plane_extractor"]
+	path = src/table_plane_extractor
+	url = https://github.com/ichores-research/table_plane_extractor.git
