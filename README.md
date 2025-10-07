@@ -55,7 +55,7 @@ color_frame_id: head_rgbd_sensor_rgb_frame  # different for Tiago!
 grasp_frame_id: gripper_link  # for Tiago: "gripper_link", for HSR "hand_palm_link"
 ```
 
-## Startup using the compose file(s)
+## Startup using the compose file(s)DATASET=ycb_ichores ROS_MASTER_URI=http://localhost:11311 ROS_IP=127.0.0.1 MODEL_HOST=ollama CONFIG=../config/params_tiago_cracow.yaml TEST_RUN=FALSE MOVE_GROUP=torso DISPLAY=:0 docker compose -f supreme-docker-compose.yml   --profile gdrnpp   --profile goal_state_reasoning_ollama   --profile contact_graspnet    --profile motion   --profile task   --profile pointing_gesture_recognition up --build
 [Configure](#configurations) all files first. Don't forget to set the [IP Adress of the ROS Master](#ros-master) if you have another ROS-Core running.
 
 The following commands will download the necessary data and then build all the docker containers and start them. 
@@ -70,7 +70,7 @@ xhost +
 ```
 Configure your own docker combination by adding or removing profiles and setting environment variables; e.g.
 ```
-DATASET=ycb_ichores ROS_MASTER_URI=http://localhost:11311 ROS_IP=127.0.0.1 MODEL_HOST=ollama CONFIG=../config/params_tiago_cracow.yaml TEST_RUN=FALSE MOVE_GROUP=torso DISPLAY=:0 docker compose -f supreme-docker-compose.yml   --profile gdrnpp   --profile goal_state_reasoning_ollama   --profile contact_graspnet   --profile grounded_sam2_ros   --profile motion   --profile task   --profile pointing_gesture_recognition --profile whisper_ros   --profile yolo   up --build
+DATASET=ycb_ichores ROS_MASTER_URI=http://localhost:11311 ROS_IP=127.0.0.1 MODEL_HOST=ollama CONFIG=../config/params_tiago_cracow.yaml TEST_RUN=FALSE MOVE_GROUP=torso DISPLAY=:0 docker compose -f supreme-docker-compose.yml   --profile gdrnpp   --profile goal_state_reasoning_ollama   --profile contact_graspnet    --profile motion   --profile task   --profile pointing_gesture_recognition up --build
 ```
 You can mix and match all combinations and flavors of ichores project components.
 
