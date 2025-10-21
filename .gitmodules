@@ -54,3 +54,5 @@
 [submodule "src/table_plane_extractor"]
 	path = src/table_plane_extractor
 	url = https://github.com/ichores-research/table_plane_extractor.git
+[submodule "uncom"]
+	branch = comparison_multiple_objects
