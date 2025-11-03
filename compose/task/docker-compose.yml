@@ -1,8 +1,9 @@
 version: '2.4'
 services:
+  task:
     image: task
     privileged: true
-    build: 
+    build:
       context: ../../
       dockerfile: src/task/dockerfile
     network_mode: "host"
