@@ -45,6 +45,9 @@ services:
       - DISPLAY
       - QT_X11_NO_MITSHM=1
       - DATASET=${DATASET}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - CUDA_VISIBLE_DEVICES=0,1
     command: bash -c "source catkin_ws/devel/setup.bash;
              python ./gdrnpp/core/gdrn_modeling/demo/demo_gdrn_ros.py --dataset_name ${DATASET}"        
     stdin_open: true
@@ -116,8 +119,6 @@ services:
     depends_on:
       - table_plane_extractor
 
-  
-  
   goal_state_reasoning:
     image: goal_state_reasoning:${MODEL_HOST:-ollama}
     privileged: true
