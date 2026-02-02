@@ -115,7 +115,7 @@ services:
       - QT_X11_NO_MITSHM=1
     stdin_open: true
     tty: true
-    command: [ "bash", "-c", "source /opt/ros/noetic/setup.bash && source /root/catkin_ws/devel/setup.bash && python3 /root/motion/motion_service.py" ]
+    command: [ "bash", "-c", "source /opt/ros/noetic/setup.bash && source /tiago_public_ws/devel/setup.bash && source /root/catkin_ws/devel/setup.bash && python3 /root/motion/motion_service.py" ]
     depends_on:
       - table_plane_extractor
 
