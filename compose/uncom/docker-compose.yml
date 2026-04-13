@@ -1,0 +1,215 @@
+  version: '2.4'
+  services:
+    tiago_sim:
+      image: palroboticssl/tiago_tutorials:noetic
+      network_mode: "host"
+      runtime: "nvidia"
+      environment:
+        - DISPLAY
+        - QT_X11_NO_MITSHM=1
+        - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all}
+        - NVIDIA_DRIVER_CAPABILITIES=all
+      volumes:
+        - /tmp/.X11-unix:/tmp/.X11-unix:rw
+        - /etc/localtime:/etc/localtime:ro
+      entrypoint: ""
+      command: >
+        bash -c "source /tiago_public_ws/devel/setup.bash &&
+                roslaunch tiago_gazebo tiago_gazebo.launch
+                  public_sim:=true
+                  end_effector:=pal-gripper
+                  world:=tutorial_office
+                  gzpose:='-x 1.40 -y -2.79 -z -0.003 -R 0.0 -P 0.0 -Y 0.0'
+                  use_moveit_camera:=true
+                  gzclient:=${GAZEBO_GUI:-false}"
+      stdin_open: true
+      tty: true
+      profiles:
+        - simulation
+
+    yolo:
+      image: yolo
+      privileged: true
+      build:
+        context: ../../src/yolov8_ros/docker
+        dockerfile: dockerfile_ros
+      network_mode: "host"
+      runtime: "nvidia"
+      volumes:
+        - /dev/bus/usb:/dev/bus/usb
+        - /tmp/.X11-unix:/tmp/.X11-unix:rw
+        - /etc/timezone:/etc/timezone:ro 
+        - "../../src/yolov8_ros:/root/yolo:rw"
+        - "../../data/weights/yolov8:/root/yolo/weights:rw"
+        - ../../config:/root/config
+      environment: 
+        - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+        - ROS_IP=${ROS_IP:-127.0.0.1}
+        - DISPLAY
+        - QT_X11_NO_MITSHM=1
+        - DATASET=${DATASET}
+      command: bash -c "source catkin_ws/devel/setup.bash;
+                        python ./yolo/detect_ros_seg_service.py --conf-thres 0.85 --weights ./yolo/weights/${DATASET}.pt --camera-topic '$$(rosparam get /pose_estimator/color_topic)'"
+      stdin_open: true
+      tty: true 
+
+    gdrnpp:
+      image: gdrnpp
+      build:
+        context: ../../src/gdrnpp_bop2022/docker
+        dockerfile: dockerfile_ros
+      network_mode: "host"
+      runtime: "nvidia"
+      volumes:
+        - "../../src/gdrnpp_bop2022:/root/gdrnpp:rw"
+        - /tmp/.X11-unix:/tmp/.X11-unix:rw
+        - /etc/localtime:/etc/localtime:ro
+        - "../../data/weights/gdrnpp:/root/gdrnpp/output:rw"
+        - "../../data/datasets:/root/gdrnpp/datasets/BOP_DATASETS:rw"
+        - ../../config:/root/config
+      environment: 
+        - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+        - ROS_IP=${ROS_IP:-127.0.0.1}
+        - DISPLAY
+        - QT_X11_NO_MITSHM=1
+        - DATASET=${DATASET}
+        - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all}
+        - NVIDIA_DRIVER_CAPABILITIES=all
+        - CUDA_VISIBLE_DEVICES=0,1
+      command: bash -c "source catkin_ws/devel/setup.bash;
+              python ./gdrnpp/core/gdrn_modeling/demo/demo_gdrn_ros.py --dataset_name ${DATASET}"        
+      stdin_open: true
+      tty: true
+    task:
+      image: task
+      privileged: true
+      build: 
+        context: ../../
+        dockerfile: src/task/dockerfile
+      network_mode: "host"
+      runtime: "nvidia"
+      volumes:
+        - /dev/bus/usb:/dev/bus/usb
+        - /tmp/.X11-unix:/tmp/.X11-unix:rw
+        - ../../src/task:/root/task
+        - ../../config:/root/config
+        - "../../data/datasets:/root/task/datasets:rw"
+      environment:
+        - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+        - ROS_IP=${ROS_IP:-127.0.0.1}
+        - DISPLAY
+        - QT_X11_NO_MITSHM=1
+        - DATASET=${DATASET}
+      command: bash -c "source catkin_ws/devel/setup.bash;
+                        rosparam load /root/config/${CONFIG} /pose_estimator;
+                        python /root/task/test_obj_det_dev.py"
+      stdin_open: true
+      tty: true
+      depends_on:
+        - yolo
+        - gdrnpp
+    table_plane_extractor:
+      image: table_plane_extractor
+      privileged: true
+      build: 
+        context: ../../src/table_plane_extractor/
+        dockerfile: Dockerfile
+      network_mode: "host"
+      volumes:
+        - /dev/bus/usb:/dev/bus/usb
+        - /tmp/.X11-unix:/tmp/.X11-unix:rw
+        - ../../config:/root/config
+      environment:
+        - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+        - ROS_IP=${ROS_IP:-127.0.0.1}
+        - DISPLAY
+        - QT_X11_NO_MITSHM=1
+    motion:
+      image: motion
+      privileged: true
+      build: 
+        context: ../../src/motion
+        dockerfile: Dockerfile
+      network_mode: "host"
+      runtime: "nvidia"
+      volumes:
+        - "../../src/motion:/root/motion:rw"
+        - /tmp/.X11-unix:/tmp/.X11-unix:rw
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro 
+      environment: 
+        - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+        - ROS_IP=${ROS_IP:-127.0.0.1}
+        - DISPLAY
+        - QT_X11_NO_MITSHM=1
+      stdin_open: true
+      tty: true
+      command: [ "bash", "-c", "source /opt/ros/noetic/setup.bash && source /tiago_public_ws/devel/setup.bash && source /root/catkin_ws/devel/setup.bash && python3 /root/motion/motion_service.py" ]
+      depends_on:
+        - table_plane_extractor
+
+    uncom_ros:
+      image: uncom_ros:latest
+      build:
+        context: ../../src/uncom/uncom_ws
+        dockerfile: Dockerfile
+      network_mode: "host"
+      runtime: "nvidia"
+      volumes:
+        - /tmp/.X11-unix:/tmp/.X11-unix:rw
+        - /etc/localtime:/etc/localtime:ro
+        - ../../src/uncom/uncom_ws/src/arm_commander:/root/catkin_ws/src/arm_commander:rw
+        - ../../src/uncom/uncom_ws/src/pal_interaction_msgs:/root/catkin_ws/src/pal_interaction_msgs:rw
+        - ../../src/uncom/uncom_ws/src/tiago_robot:/root/catkin_ws/src/tiago_robot:rw
+        - ../../src/uncom/uncom_ws/src/uncom:/root/catkin_ws/src/uncom:rw
+        - ../../src/uncom/output:/root/output:rw
+        - ../../data/datasets:/root/catkin_ws/src/uncom/data/datasets:ro
+      environment:
+        - DISPLAY
+        - QT_X11_NO_MITSHM=1
+        - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
+        - ROS_IP=${ROS_IP:-127.0.0.1}
+      command: >
+        bash -c "source /opt/ros/noetic/setup.bash &&
+                cd /root/catkin_ws &&
+                catkin build &&
+                source /root/catkin_ws/devel/setup.bash &&
+                roslaunch uncom uncom.launch simulation:=${SIMULATION:-false}"
+      depends_on:
+        - motion
+
+      stdin_open: true
+      tty: true
+
+    uncom:
+      image: uncom:latest
+      build:
+        context: ../../src/uncom/uncom_reasoner
+        dockerfile: Dockerfile
+      network_mode: "host"
+      deploy:
+        resources:
+          reservations:
+            devices:
+              - driver: nvidia
+                device_ids: ['1']
+                capabilities: [gpu]
+      environment:
+        - DISPLAY
+        - QT_X11_NO_MITSHM=1
+      volumes:
+        - /tmp/.X11-unix:/tmp/.X11-unix:rw
+        - /etc/localtime:/etc/localtime:ro
+        - ../../src/uncom/output:/root/output:rw
+        - ../../src/uncom/uncom_reasoner/models/hand_landmarker.task:/root/models/hand_landmarker.task:ro
+        - ../../src/uncom/uncom_reasoner/models:/root/.cache/huggingface:rw
+        - ../../src/uncom/uncom_reasoner/main.py:/root/main.py:ro
+        - ../../src/uncom/uncom_reasoner/uncom_utils:/root/uncom_utils:ro
+      command: ["/usr/bin/python3", "/root/main.py"]
+      depends_on:
+        - yolo
+        - gdrnpp
+        - uncom_ros
+        - motion
+      stdin_open: true
+      tty: true

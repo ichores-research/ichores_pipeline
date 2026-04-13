@@ -11,6 +11,7 @@ services:
     volumes:
       - /dev/bus/usb:/dev/bus/usb
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /etc/timezone:/etc/timezone:ro 
       - "../../src/yolov8_ros:/root/yolo:rw"
       - "../../data/weights/yolov8:/root/yolo/weights:rw"
       - ../../config:/root/config
@@ -108,6 +109,7 @@ services:
       - "../../src/motion:/root/motion:rw"
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro 
     environment: 
       - ROS_MASTER_URI=${ROS_MASTER_URI:-http://127.0.0.1:11311}
       - ROS_IP=${ROS_IP:-127.0.0.1}
@@ -130,6 +132,8 @@ services:
     volumes:
       - ./.ollama/models:/root/.ollama/models:rw
       - /dev/bus/usb:/dev/bus/usb
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro 
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ../../src/goal_state_reasoning/src:/root/goal_state_reasoning
       - ../../src/goal_state_reasoning/goal_state_reasoning_msgs:/root/catkin_ws/src/goal_state_reasoning_msgs
